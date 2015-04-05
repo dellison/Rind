@@ -2,6 +2,8 @@
   "A spam filter for email!
   Eat the fruit, but not the rind."
   (:gen-class)
+  (:require [clojure.string :as str])
+  (:require [clojure.java.io :as io])
   (:use rind.corpus)
   (:use rind.counter)
   (:use rind.eval))
@@ -9,11 +11,10 @@
 (def training-data
   "The training data consists of the first four sections of the Enron email corpus.
   Represented as a list of (:label path/to/file) pairs."
-  (let [corpus-dir "/Users/david/projects/clojure/nlplol/resources/enronspam"]
-    (for [section ["enron1" "enron2" "enron3" "enron4"]
-          dir '("ham" "spam")
-          fs (all-files-in-dir (format "%s/%s/%s" corpus-dir section dir))]
-      [(keyword dir) fs])))
+  (for [section ["enron1" "enron2" "enron3" "enron4"]
+        dir '("ham" "spam")
+        fs (all-files-in-dir (.getPath (io/file (io/resource section) dir)))]
+    [(keyword dir) fs]))
 
 (def test-data
   "Test data consists of the fifth and sixth secition of the Enron email corpus.
@@ -21,12 +22,12 @@
   (let [corpus-dir "/Users/david/projects/clojure/nlplol/resources/enronspam"]
     (for [section ["enron5" "enron6"]
           dir '("ham" "spam")
-          fs (all-files-in-dir (format "%s/%s/%s" corpus-dir section dir))]
+          fs (all-files-in-dir (.getPath (io/file (io/resource section) dir)))]
       [(keyword dir) fs])))
 
 (def stopwords
   "NLTK's stopwords corpus."
-  (set (tokens "/Users/david/nltk_data/corpora/stopwords/english")))
+  (set (tokens (io/resource "stopwords.txt"))))
 
 (defn extract-features-bow
   "Get the bag-of-words representation of the file at path f."
@@ -79,12 +80,12 @@
 
 (defn pp-conf-matrix
   [cm]
-  (println "\t" (clojure.string/join "\t" (keys cm)))
+  (println "\t" (str/join "\t" (keys cm)))
   (println 
-   (clojure.string/join "\n"
-                        (for [c (keys cm)]
-                          (clojure.string/join "\t" (list c
-                                                           (clojure.string/join "\t" (map #(get-in cm [c %] 0) (keys cm)))))))))
+   (str/join "\n"
+             (for [c (keys cm)]
+               (str/join "\t" (list c
+                                    (str/join "\t" (map #(get-in cm [c %] 0) (keys cm)))))))))
 
 (defn pp-trial-results
   ""
