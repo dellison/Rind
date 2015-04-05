@@ -51,12 +51,12 @@
 
 (defn p-c-f-add1
   "Probability of class given feature: P(C|W).
-  Computed using the naive bayes assumption."
+  Computed using the naive bayes assumption with add-one smoothing."
   [model cl feature]
   (let [c (get model cl)
         total-words (apply + (map #(get-total (second %)) model))
         pw (/ (inc (get-count c feature)) (inc total-words))      ;; P(feature)
-        pc (/ (inc (get-total c)) (inc total-words))           ;; P(class)
+        pc (/ (get-total c) total-words)                          ;; P(class)
         pwc (/ (inc (get-count c feature)) (inc (get-total c)))]  ;; P(feature|class)
     (/ (* pwc pc)
        pc)))
