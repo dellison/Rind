@@ -39,8 +39,9 @@
   [gold results]
   (let [classes (set gold)
         getcnt (fn [gld res] (count (filter true? (map #(and (= %1 gld) (= %2 res)) gold results))))]
-    (for [c1 classes c2 classes]
-      [c1 c2 (getcnt c1 c2)])))
+    (apply merge-with merge
+           (for [c1 classes c2 classes]
+             {c1 {c2 (getcnt c1 c2)}}))))
 
 (defn evaluate-classifier-fn
   "Returns a map of some evaluation metrics and other information

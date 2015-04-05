@@ -60,7 +60,6 @@
     (/ (* pwc pc)
        pc)))
 
-
 (defn train
   "Builds the model for naive bayes spam classification."
   [train-data extract-feat-fn]
@@ -78,6 +77,15 @@
                (for [c (keys model)]
                  [c (apply + (map #(Math/log (p-c-f-add1 model c %)) tokens))]))))))
 
+(defn pp-conf-matrix
+  [cm]
+  (println "\t" (clojure.string/join "\t" (keys cm)))
+  (println 
+   (clojure.string/join "\n"
+                        (for [c (keys cm)]
+                          (clojure.string/join "\t" (list c
+                                                           (clojure.string/join "\t" (map #(get-in cm [c %] 0) (keys cm)))))))))
+
 (defn pp-trial-results
   ""
   [results]
@@ -86,7 +94,7 @@
                    (:num-total results)
                    (double (:accuracy results))))
   (println "Confusion Matrix:")
-  (println "TODO")
+  (pp-conf-matrix (:confusion-matrix results))
   (println))
 
 (defn run-nb-trial
@@ -100,14 +108,18 @@
 (defn -main
   "Run me!"
   []
-  (println "Email classification with BOW features:")
+  (println "Email classification with BOW features")
   (run-nb-trial extract-features-bow)
+  (println)
 
-  (println "Email classification with BOW features (minus skipwords):")
+  (println "Email classification with BOW features (minus skipwords)")
   (run-nb-trial extract-features-bow-skipwords)
+  (println)
 
-  (println "Email classification with bigram features:")
+  (println "Email classification with bigram features")
   (run-nb-trial extract-features-bigrams)
+  (println)
 
-  (println "Email classification with trigram features:")
-  (run-nb-trial extract-features-trigrams)) 
+  (println "Email classification with trigram features")
+  (run-nb-trial extract-features-trigrams) 
+  (println))
