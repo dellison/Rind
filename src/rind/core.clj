@@ -30,22 +30,22 @@
   (set (tokens (io/resource "stopwords.txt"))))
 
 (defn extract-features-bow
-  "Get the bag-of-words representation of the file at path f."
+  "Get bag-of-words features from the file at path f."
   [f]
   (tokens f))
 
 (defn extract-features-bow-skipwords
-  ""
+  "Get bag-of-words features (minus stopwords) from the file at path f."
   [f]
   (filter #(not (contains? stopwords %)) (tokens f)))
 
 (defn extract-features-bigrams
-  ""
+  "Get bigram features from file at path f."
   [f]
   (ngrams 2 (tokens f)))
 
 (defn extract-features-trigrams
-  ""
+  "Get trigram features from file at path f."
   [f]
   (ngrams 3 (tokens f)))
 
@@ -69,7 +69,7 @@
            {label (frequencies (extract-feat-fn file))})))
 
 (defn classify
-  ""
+  "Classify an email using Naive Bayes probability estimation."
   [model [gold f] extract-feat-fn]
   (let [tokens (extract-feat-fn f)]
     (first
@@ -79,6 +79,7 @@
                  [c (apply + (map #(Math/log (p-c-f-add1 model c %)) tokens))]))))))
 
 (defn pp-conf-matrix
+  "Pretty-print the confusion matrix."
   [cm]
   (println "\t" (str/join "\t" (keys cm)))
   (println 
@@ -88,7 +89,9 @@
                                     (str/join "\t" (map #(get-in cm [c %] 0) (keys cm)))))))))
 
 (defn pp-trial-results
-  ""
+  "Pretty print the results to the console.
+  <#correct> / <total> = <accuracy>
+  <confusion-matrix>"
   [results]
   (println (format "%d / %d = %.04f"
                    (:num-correct results)

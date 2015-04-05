@@ -26,6 +26,39 @@ and test on sections 5 and 6. It will use several feature extraction functions:
 
 It will print the accuracy and confusion matrix for each of these tasks.
 
+## Output
+
+    Email classification with BOW features
+    10975 / 11175 = 0.9821
+    Confusion Matrix:
+    	 :spam	:ham
+    :spam	8078	97
+    :ham	103	2897
+    
+    
+    Email classification with BOW features (minus skipwords)
+    10944 / 11175 = 0.9793
+    Confusion Matrix:
+    	 :spam	:ham
+    :spam	8050	125
+    :ham	106	2894
+    
+    
+    Email classification with bigram features
+    10866 / 11175 = 0.9723
+    Confusion Matrix:
+    	 :spam	:ham
+    :spam	8156	19
+    :ham	290	2710
+    
+    
+    Email classification with trigram features
+    9382 / 11175 = 0.8396
+    Confusion Matrix:
+    	 :spam	:ham
+    :spam	8168	7
+    :ham	1786	1214
+
 ## License
 
 Copyright © 2015 David Ellison
