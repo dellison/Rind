@@ -16,6 +16,15 @@ Now you should be able to run the program with
 
     lein run
 
+This will train a Naive Bayes classifier on sections 1-4 of the Enron-Spam corpus,
+and test on sections 5 and 6. It will use several feature extraction functions:
+
+- bag-of-words
+- bag-of-words (excluding stopwords, using nltk's stopword list)
+- bigrams
+- trigrams
+
+It will print the accuracy and confusion matrix for each of these tasks.
 
 ## License
 
