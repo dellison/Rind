@@ -1,6 +1,6 @@
 (ns rind.core
-  "A spam filter for email!
-  Eat the fruit, but not the rind."
+  "Naive Bayes text classification!
+  Separate the fruit from the rind."
   (:gen-class)
   (:require [clojure.string :as str])
   (:require [clojure.java.io :as io])
@@ -8,7 +8,7 @@
   (:use rind.counter)
   (:use rind.eval))
 
-(def training-data
+(def enron-training-data
   "The training data consists of the first four sections of the Enron email corpus.
   Represented as a list of (:label path/to/file) pairs."
   (for [section ["enron1" "enron2" "enron3" "enron4"]
@@ -16,14 +16,27 @@
         fs (all-files-in-dir (.getPath (io/file (io/resource section) dir)))]
     [(keyword dir) fs]))
 
-(def test-data
+(def enron-test-data
   "Test data consists of the fifth and sixth secition of the Enron email corpus.
   Represented as a list of (:label path/to/file) pairs. "
-  (let [corpus-dir "/Users/david/projects/clojure/nlplol/resources/enronspam"]
-    (for [section ["enron5" "enron6"]
-          dir '("ham" "spam")
-          fs (all-files-in-dir (.getPath (io/file (io/resource section) dir)))]
-      [(keyword dir) fs])))
+  (for [section ["enron5" "enron6"]
+        dir '("ham" "spam")
+        fs (all-files-in-dir (.getPath (io/file (io/resource section) dir)))]
+    [(keyword dir) fs]))
+
+(def movie-training-data
+  "Training data is the first 900 positive and negative movie reviews from Cornell's
+  Movie review sentiment corpus."
+  (for [sent ["pos" "neg"]
+        f (take 900 (all-files-in-dir (.getPath (io/file (io/resource sent)))))]
+    [(keyword sent) f]))
+
+(def movie-test-data
+  "Test data is the final 100 positive and negative movie reviews from Cornell's
+  movie review sentiment corpus."
+  (for [sent ["pos" "neg"]
+        f (drop 900 (all-files-in-dir (.getPath (io/file (io/resource sent)))))]
+    [(keyword sent) f]))
 
 (def stopwords
   "NLTK's stopwords corpus."
@@ -104,7 +117,7 @@
 (defn run-nb-trial
   "End-to-end training and evaluation of Naive Bayes classification using the features
   extracted by feature extraction function fun."
-  [fun]
+  [training-data test-data fun]
   (let [model (train training-data fun)
         results (evaluate-classifier-fn #(classify model % fun) test-data)]
     (pp-trial-results results)))
@@ -113,17 +126,34 @@
   "Run me!"
   []
   (println "Email classification with BOW features")
-  (run-nb-trial extract-features-bow)
+  (run-nb-trial enron-training-data enron-test-data extract-features-bow)
   (println)
 
   (println "Email classification with BOW features (minus skipwords)")
-  (run-nb-trial extract-features-bow-skipwords)
+  (run-nb-trial enron-training-data enron-test-data extract-features-bow-skipwords)
   (println)
 
   (println "Email classification with bigram features")
-  (run-nb-trial extract-features-bigrams)
+  (run-nb-trial enron-training-data enron-test-data extract-features-bigrams)
   (println)
 
   (println "Email classification with trigram features")
-  (run-nb-trial extract-features-trigrams) 
-  (println))
+  (run-nb-trial enron-training-data enron-test-data extract-features-trigrams) 
+  (println)
+
+  (println "Movie review sentiment classification with BOW features")
+  (run-nb-trial movie-training-data movie-test-data extract-features-bow)
+  (println)
+
+  (println "Movie review sentiment classification with BOW features (minus skipwords)")
+  (run-nb-trial movie-training-data movie-test-data extract-features-bow-skipwords)
+  (println)
+
+  (println "Movie review sentiment classification with bigram features")
+  (run-nb-trial movie-training-data movie-test-data extract-features-bigrams)
+  (println)
+
+  (println "Movie review sentiment classification with trigram features")
+  (run-nb-trial movie-training-data movie-test-data extract-features-trigrams) 
+  (println)
+  )

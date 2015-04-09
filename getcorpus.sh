@@ -24,6 +24,13 @@ tar xzf enron6.tar.gz
 
 wget -nv http://www.aueb.gr/users/ion/data/enron-spam/readme.txt
 
+
+echo "Downloading Cornell Movie Review data..."
+wget -nv http://www.cs.cornell.edu/people/pabo/movie-review-data/review_polarity.tar.gz
+tar xzf review_polarity.tar.gz
+mv txt_sentoken/pos .
+mv txt_sentoken/neg .
+
 echo "Download complete."
 
 echo "Cleaning up..."
@@ -33,5 +40,8 @@ rm enron3.tar.gz
 rm enron4.tar.gz
 rm enron5.tar.gz
 rm enron6.tar.gz
+
+rm -r txt_sentoken
+rm review_polarity.tar.gz
 
 echo "Complete."
